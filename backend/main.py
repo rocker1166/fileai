@@ -113,8 +113,10 @@ async def ask_question(req: AskRequest):
         raise HTTPException(status_code=404, detail="Document index not found.")
 
     qa_chain = get_qa_chain(retriever)
-
-    result = qa_chain({"query": req.question})
+    
+    # Use invoke() instead of __call__
+    result = qa_chain.invoke({"query": req.question})
+    
     answer = result.get("result", "")
     docs = result.get("source_documents", [])
 

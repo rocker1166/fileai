@@ -2,8 +2,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import RetrievalQA
 from langchain.schema.retriever import BaseRetriever
 
-# Initialize your Gemini-backed chat model
-llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.2)
+# Initialize your Gemini-backed chat model with correct model name format
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.2)
 
 
 def get_qa_chain(retriever: BaseRetriever) -> RetrievalQA:
