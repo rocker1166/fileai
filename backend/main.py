@@ -241,29 +241,31 @@ def list_documents():
         res = supabase.table("documents").select("*").execute()
         return res.data
 
-@app.get("/document/{doc_id}")
-def get_document(doc_id: str):
-    """Get document metadata and QA history"""
-    # Check cache first
-    if doc_id in document_cache:
-        doc_data = document_cache[doc_id]
-    else:
-        doc_query = supabase.table("documents").select("*").eq("id", doc_id).single().execute()
-        if doc_query.status_code != 200:
-            raise HTTPException(status_code=404, detail="Document not found.")
-        doc_data = doc_query.data
-        # Cache the result
-        document_cache[doc_id] = doc_data
-    
-    # Get recent question history (limit to 20 for performance)
-    history = supabase.table("questions")\
-        .select("question,answer,asked_at")\
-        .eq("document_id", doc_id)\
-        .order("asked_at", desc=True)\
-        .limit(20)\
-        .execute()
-    
-    return {"metadata": doc_data, "qa_history": history.data}
+@app.get("/document/{document_id}")
+def get_document(document_id: str):
+    """Get document details by ID."""
+    try:
+        # Query the Pinecone index for document metadata
+        doc_query = index.describe_index_stats()
+        
+        # Retrieve document from database if it exists
+        doc = db.get_document(document_id)
+        if not doc:
+            return {"error": "Document not found"}
+        
+        # Return document details
+        return {
+            "id": doc["id"],
+            "filename": doc["filename"],
+            "upload_time": doc["upload_time"],
+            "status": doc["status"],
+            "error": doc.get("error", None),
+            "page_count": doc.get("page_count", 0),
+            "summary": doc.get("summary", "")
+        }
+    except Exception as e:
+        print(f"Error retrieving document: {e}")
+        return {"error": f"Error retrieving document: {str(e)}"}
 
 @app.delete("/document/{doc_id}")
 def delete_document(doc_id: str):
