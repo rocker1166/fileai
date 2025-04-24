@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useDropzone } from "react-dropzone"
 import { motion } from "framer-motion"
 import { Upload, FileText, AlertCircle, Loader2 } from "lucide-react"
@@ -72,6 +72,20 @@ export default function UploadSection({ onDocumentUploaded }: UploadSectionProps
           filename: data.filename,
           uploaded_at: new Date().toISOString(),
         }
+
+        // Initialize an empty chat history for this document
+        localStorage.setItem(`chat-history-${newDocument.id}`, JSON.stringify([{
+          id: "welcome",
+          role: "assistant",
+          content: `I've analyzed "${newDocument.filename}". Ask me anything about it!`,
+          timestamp: new Date(),
+        }]))
+
+        // Update uploaded documents in localStorage
+        const existingDocs = localStorage.getItem('uploaded-documents')
+        const documents = existingDocs ? JSON.parse(existingDocs) : []
+        const updatedDocs = [newDocument, ...documents.filter((doc: Document) => doc.id !== newDocument.id)]
+        localStorage.setItem('uploaded-documents', JSON.stringify(updatedDocs))
 
         onDocumentUploaded(newDocument)
       } else {

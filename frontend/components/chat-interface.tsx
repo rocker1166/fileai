@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Send, FileText, Loader2 } from "lucide-react"
@@ -16,17 +15,59 @@ interface ChatInterfaceProps {
 }
 
 export default function ChatInterface({ document }: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: `I've analyzed "${document.filename}". Ask me anything about it!`,
-      timestamp: new Date(),
-    },
-  ])
+  const storageKey = `chat-history-${document.id}`
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Load messages from localStorage when document changes
+  useEffect(() => {
+    const loadMessages = () => {
+      try {
+        const savedMessages = localStorage.getItem(storageKey)
+        if (savedMessages) {
+          const parsedMessages = JSON.parse(savedMessages, (key, value) => {
+            // Convert timestamp strings back to Date objects
+            if (key === 'timestamp') {
+              return new Date(value)
+            }
+            return value
+          })
+          setMessages(parsedMessages)
+        } else {
+          // Set initial welcome message if no history exists
+          setMessages([{
+            id: "welcome",
+            role: "assistant",
+            content: `I've analyzed "${document.filename}". Ask me anything about it!`,
+            timestamp: new Date(),
+          }])
+        }
+      } catch (error) {
+        console.error("Error loading chat history:", error)
+        // Fallback to initial state if there's an error
+        setMessages([{
+          id: "welcome",
+          role: "assistant",
+          content: `I've analyzed "${document.filename}". Ask me anything about it!`,
+          timestamp: new Date(),
+        }])
+      }
+    }
+    loadMessages()
+  }, [document.id, storageKey])
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(messages))
+      } catch (error) {
+        console.error("Error saving chat history:", error)
+      }
+    }
+  }, [messages, storageKey])
 
   useEffect(() => {
     scrollToBottom()

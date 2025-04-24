@@ -17,7 +17,18 @@ export default function Home() {
   const [showHistory, setShowHistory] = useState(false)
 
   useEffect(() => {
-    // Fetch documents on initial load
+    // Load documents from localStorage first
+    const savedDocs = localStorage.getItem('uploaded-documents')
+    if (savedDocs) {
+      try {
+        const parsedDocs = JSON.parse(savedDocs)
+        setDocuments(parsedDocs)
+      } catch (error) {
+        console.error("Error parsing saved documents:", error)
+      }
+    }
+
+    // Then fetch documents from server and merge with local
     fetchDocuments()
 
     // Check if there's a recently used document in localStorage
@@ -27,12 +38,23 @@ export default function Home() {
     }
   }, [])
 
+  // Save documents to localStorage whenever they change
+  useEffect(() => {
+    if (documents.length > 0) {
+      localStorage.setItem('uploaded-documents', JSON.stringify(documents))
+    }
+  }, [documents])
+
   const fetchDocuments = async () => {
     try {
       const response = await fetch("http://localhost:8000/documents")
       if (response.ok) {
         const data = await response.json()
-        setDocuments(data)
+        // Merge with existing documents, avoiding duplicates
+        setDocuments(prev => {
+          const newDocs = data.filter((doc: Document) => !prev.some(p => p.id === doc.id))
+          return [...prev, ...newDocs]
+        })
       }
     } catch (error) {
       console.error("Error fetching documents:", error)
@@ -63,7 +85,10 @@ export default function Home() {
 
   const handleDocumentUpload = (document: Document) => {
     setActiveDocument(document)
-    setDocuments((prev) => [document, ...prev])
+    setDocuments((prev) => {
+      const newDocs = prev.filter(doc => doc.id !== document.id)
+      return [document, ...newDocs]
+    })
     setActiveView("chat")
     localStorage.setItem("recentDocumentId", document.id)
   }
@@ -83,11 +108,16 @@ export default function Home() {
 
       if (response.ok) {
         setDocuments((prev) => prev.filter((doc) => doc.id !== documentId))
-
+        localStorage.setItem('uploaded-documents', 
+          JSON.stringify(documents.filter(doc => doc.id !== documentId))
+        )
+        
         if (activeDocument?.id === documentId) {
           setActiveDocument(null)
           setActiveView("upload")
           localStorage.removeItem("recentDocumentId")
+          // Also remove chat history for this document
+          localStorage.removeItem(`chat-history-${documentId}`)
         }
       }
     } catch (error) {
@@ -185,6 +215,7 @@ export default function Home() {
                 activeDocumentId={activeDocument?.id}
                 onDocumentSelect={handleDocumentSelect}
                 onDocumentDelete={handleDeleteDocument}
+                onClose={() => setShowHistory(false)}
               />
             </motion.div>
           )}

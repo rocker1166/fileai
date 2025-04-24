@@ -10,6 +10,7 @@ interface DocumentHistoryProps {
   activeDocumentId: string | undefined
   onDocumentSelect: (document: Document) => void
   onDocumentDelete: (documentId: string) => void
+  onClose: () => void
 }
 
 export default function DocumentHistory({
@@ -17,6 +18,7 @@ export default function DocumentHistory({
   activeDocumentId,
   onDocumentSelect,
   onDocumentDelete,
+  onClose,
 }: DocumentHistoryProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -31,7 +33,7 @@ export default function DocumentHistory({
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-lg">Document History</h3>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onClose}>
           <X className="h-4 w-4" />
         </Button>
       </div>
