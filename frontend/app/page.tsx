@@ -26,7 +26,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    // Load documents from localStorage first
+    // Load documents from localStorage only
     const savedDocs = localStorage.getItem('uploaded-documents')
     if (savedDocs) {
       try {
@@ -36,9 +36,6 @@ export default function Home() {
         console.error("Error parsing saved documents:", error)
       }
     }
-
-    // Then fetch documents from server and merge with local
-    fetchDocuments()
 
     // Check if there's a recently used document in localStorage
     const recentDocId = localStorage.getItem("recentDocumentId")
@@ -53,22 +50,6 @@ export default function Home() {
       localStorage.setItem('uploaded-documents', JSON.stringify(documents))
     }
   }, [documents])
-
-  const fetchDocuments = async () => {
-    try {
-      const response = await fetch("https://fileai.onrender.com/documents")
-      if (response.ok) {
-        const data = await response.json()
-        // Merge with existing documents, avoiding duplicates
-        setDocuments(prev => {
-          const newDocs = data.filter((doc: Document) => !prev.some(p => p.id === doc.id))
-          return [...prev, ...newDocs]
-        })
-      }
-    } catch (error) {
-      console.error("Error fetching documents:", error)
-    }
-  }
 
   const fetchDocumentStatus = async (documentId: string) => {
     try {

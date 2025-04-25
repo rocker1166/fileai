@@ -10,6 +10,7 @@ import type { Document } from "@/types/document"
 import type { Message } from "@/types/chat"
 import MessageItem from "@/components/message-item"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { Suggestions } from "@/components/ui/suggestions"
 
 // Add WebSpeech API types
 declare global {
@@ -29,6 +30,8 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isListening, setIsListening] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [isSelectingSuggestion, setIsSelectingSuggestion] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
   const recognition = useRef<any>(null)
@@ -129,6 +132,12 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
     }
   };
 
+  const handleSuggestionSelect = (suggestion: string) => {
+    setIsSelectingSuggestion(false)
+    setShowSuggestions(false)
+    setInput(suggestion)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
@@ -226,10 +235,23 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
 
       <div className="p-3 md:p-4 border-t bg-white dark:bg-gray-950">
         <form onSubmit={handleSubmit} className="flex items-end space-x-2">
-          <div className="flex-1 flex flex-col space-y-2">
+          <div className="flex-1 flex flex-col space-y-2 relative">
+            {showSuggestions && (
+              <Suggestions 
+                onSelect={handleSuggestionSelect}
+                onMouseEnter={() => setIsSelectingSuggestion(true)}
+                onMouseLeave={() => setIsSelectingSuggestion(false)} 
+              />
+            )}
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => {
+                if (!isSelectingSuggestion) {
+                  setTimeout(() => setShowSuggestions(false), 200)
+                }
+              }}
               placeholder="Ask a question about the document..."
               className="flex-1 resize-none text-sm md:text-base min-h-[44px] focus-visible:ring-1"
               rows={1}
