@@ -297,4 +297,7 @@ def delete_document(doc_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    # Get port from environment variable or default to 8000
+    port = int(os.getenv("PORT", 8000))
+    # Bind to 0.0.0.0 for Render deployment
+    uvicorn.run(app, host="0.0.0.0", port=port)
