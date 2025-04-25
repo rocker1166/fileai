@@ -296,8 +296,9 @@ def delete_document(doc_id: str):
         raise HTTPException(status_code=500, detail=f"Error deleting document: {str(e)}")
 
 if __name__ == "__main__":
+    # Get port from environment variable (Render uses PORT)
+    port = int(os.getenv("PORT", "10000"))
+    
+    # Run the app with the correct host and port binding
     import uvicorn
-    # Get port from environment variable or default to 8000
-    port = int(os.getenv("PORT", 8000))
-    # Bind to 0.0.0.0 for Render deployment
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")

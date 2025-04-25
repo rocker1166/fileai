@@ -3,10 +3,10 @@ services:
     name: pdf-qa-backend
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python main.py
+    startCommand: python main.py  # Changed to use our main.py with proper port binding
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
-      - key: PORT
-        value: 8000
+      - key: PORT  # Explicitly set PORT environment variable
+        value: 10000
     healthCheckPath: /documents
