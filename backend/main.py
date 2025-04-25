@@ -297,8 +297,12 @@ def delete_document(doc_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    # Force the port to be an integer and use the PORT environment variable
-    port = int(os.getenv("PORT", "8080"))
-    print(f"Starting server on port {port}")
-    # Important: Use app directly instead of string reference
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    # Hard code the port to 8080 and explicitly bind to 0.0.0.0
+    PORT = 8080
+    print(f"Starting server on http://0.0.0.0:{PORT}")
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=PORT,
+        log_level="info"
+    )

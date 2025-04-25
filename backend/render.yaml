@@ -3,10 +3,10 @@ services:
     name: pdf-qa-backend
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python main.py  # Using python directly to run main.py
+    startCommand: python main.py  # This will use our hard-coded port configuration
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
-      - key: PORT  # This will be overridden by the Render dashboard setting
+      - key: PORT  # This will be ignored since we hard-coded the port
         value: 8080
-    healthCheckPath: /
+    healthCheckPath: /documents
