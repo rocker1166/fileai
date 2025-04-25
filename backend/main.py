@@ -15,7 +15,7 @@ import requests
 import postgrest.exceptions
 
 from supabase import create_client, Client
-from models.schemas import AskRequest, UploadResponse, QAResponse, DocumentMetadata
+from models.schemas import AskRequest, UploadResponse, QAResponse, DocumentMetadata, FeedbackRequest, FeedbackResponse
 
 from utils.pdf_utils import extract_pages, chunk_pages, chunk_document_semantic, clean_text
 from utils.vector_store import build_supabase_index, get_supabase_retriever, create_local_index
@@ -294,6 +294,33 @@ def delete_document(doc_id: str):
         return JSONResponse({"message": "Document and related data deleted."})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting document: {str(e)}")
+
+@app.post("/feedback", response_model=FeedbackResponse)
+async def submit_feedback(feedback: FeedbackRequest):
+    """Submit feedback for an AI response"""
+    try:
+        # Check if feedback already exists
+        existing = supabase.table("feedback").select("*").eq("message_id", feedback.message_id).execute()
+        
+        if existing.data:
+            # Update existing feedback
+            result = supabase.table("feedback").update({
+                "is_helpful": feedback.is_helpful,
+            }).eq("message_id", feedback.message_id).execute()
+        else:
+            # Insert new feedback
+            result = supabase.table("feedback").insert({
+                "message_id": feedback.message_id,
+                "is_helpful": feedback.is_helpful,
+            }).execute()
+
+        if result.data:
+            return FeedbackResponse(success=True, message="Feedback recorded successfully")
+        else:
+            raise HTTPException(status_code=500, detail="Failed to record feedback")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

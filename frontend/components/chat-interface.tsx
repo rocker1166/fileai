@@ -181,7 +181,7 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
       if (response.ok) {
         const data = await response.json()
         const assistantMessage: Message = {
-          id: Date.now().toString(),
+          id: data.message_id, // Add message_id from response
           role: "assistant",
           content: data.answer,
           timestamp: new Date(),

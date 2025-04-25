@@ -17,6 +17,7 @@ class QAResponse(BaseModel):
     answer: str
     source_pages: List[int]
     context_snippets: List[dict]
+    message_id: str = None  # Add message_id to track feedback
 
 
 class DocumentMetadata(BaseModel):
@@ -29,3 +30,13 @@ class QuestionRecord(BaseModel):
     question: str
     answer: str
     asked_at: str
+
+
+class FeedbackRequest(BaseModel):
+    message_id: str
+    is_helpful: bool
+
+
+class FeedbackResponse(BaseModel):
+    success: bool
+    message: str

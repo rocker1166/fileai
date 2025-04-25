@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { User, Bot, ChevronDown, ChevronUp, FileText } from "lucide-react"
+import { User, Bot, ChevronDown, ChevronUp, FileText, ThumbsUp, ThumbsDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Message } from "@/types/chat"
 import ReactMarkdown from 'react-markdown'
@@ -12,6 +12,7 @@ import rehypeKatex from 'rehype-katex'
 import rehypeHighlight from 'rehype-highlight'
 import 'katex/dist/katex.min.css'
 import 'highlight.js/styles/github-dark.css'
+import { submitFeedback } from "@/lib/api"
 
 interface MessageItemProps {
   message: Message
@@ -20,6 +21,25 @@ interface MessageItemProps {
 export default function MessageItem({ message }: MessageItemProps) {
   const [showContext, setShowContext] = useState(false)
   const hasContext = message.contextSnippets && message.contextSnippets.length > 0
+  const [feedback, setFeedback] = useState<boolean | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleFeedback = async (isHelpful: boolean) => {
+    if (!message.id || isSubmitting) return
+    
+    setIsSubmitting(true)
+    try {
+      await submitFeedback({
+        message_id: message.id,
+        is_helpful: isHelpful
+      })
+      setFeedback(isHelpful)
+    } catch (error) {
+      console.error('Failed to submit feedback:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <motion.div
@@ -192,6 +212,29 @@ export default function MessageItem({ message }: MessageItemProps) {
                     ))}
                   </motion.div>
                 )}
+              </div>
+            )}
+
+            {message.role === "assistant" && message.id && (
+              <div className="flex gap-2 mt-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  disabled={isSubmitting || feedback !== null}
+                  onClick={() => handleFeedback(true)}
+                  className={feedback === true ? "text-green-500" : ""}
+                >
+                  <ThumbsUp className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  disabled={isSubmitting || feedback !== null}
+                  onClick={() => handleFeedback(false)}
+                  className={feedback === false ? "text-red-500" : ""}
+                >
+                  <ThumbsDown className="w-4 h-4" />
+                </Button>
               </div>
             )}
           </div>

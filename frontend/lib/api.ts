@@ -66,3 +66,24 @@ export async function deleteDocument(documentId: string) {
 
   return response.json()
 }
+
+export interface FeedbackRequest {
+  message_id: string;
+  is_helpful: boolean;
+}
+
+export async function submitFeedback(data: FeedbackRequest) {
+  const response = await fetch("https://fileai.onrender.com/feedback", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to submit feedback');
+  }
+
+  return response.json();
+}
