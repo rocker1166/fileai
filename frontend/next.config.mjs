@@ -9,10 +9,21 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  reactStrictMode: true,
+  transpilePackages: ['@radix-ui/react-alert-dialog'],
+  experimental: {
+    esmExternals: true
+  },
   webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': '.'
+    config.resolve = {
+      ...config.resolve,
+      alias: {
+        ...config.resolve.alias,
+        '@': '.'
+      },
+      extensionAlias: {
+        '.js': ['.js', '.ts', '.tsx']
+      }
     }
     return config
   }
