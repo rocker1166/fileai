@@ -3,8 +3,11 @@
 FileAI is an intelligent document analysis and chat interface that helps you interact with your documents using AI. Built with Next.js, FastAPI, and Google's Gemini AI model.
 
 **Deployed Link:** https://fileai.vercel.app/ 
+
 **Demo Video:** https://youtu.be/2dx9qERmmM0
+
 **Project Overview:** https://sleepy-soy-89f.notion.site/HLD-LLD-of-FileAi-1d0010dc67c2803598d4f529fddebd40?pvs=4
+
 **Full Code Documentation:** https://sleepy-soy-89f.notion.site/Complete-Source-Code-Documentation-1e0010dc67c280099a77eafe7fa43c24?pvs=4
 
 ## 🌟 Key Features
