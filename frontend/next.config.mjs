@@ -10,10 +10,16 @@ const nextConfig = {
     unoptimized: true,
   },
   reactStrictMode: true,
-  transpilePackages: ['@radix-ui/react-alert-dialog'],
-  experimental: {
-    esmExternals: true
-  },
+  transpilePackages: [
+    '@radix-ui/react-alert-dialog',
+    '@radix-ui/react-dropdown-menu',
+    '@radix-ui/react-tooltip',
+    'recharts',
+    'react-day-picker',
+    'cmdk',
+    'vaul'
+  ],
+  // Removing experimental ESM externals which may cause build issues
   webpack: (config) => {
     config.resolve = {
       ...config.resolve,
@@ -24,10 +30,18 @@ const nextConfig = {
         '@/components': './components',
         '@/app': './app'
       },
-      extensionAlias: {
-        '.js': ['.js', '.ts', '.tsx']
-      }
+      // Using fallback extensions instead of extension alias for better compatibility
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
     }
+    
+    // Adding fallback for node.js core modules
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      os: false
+    };
+    
     return config
   }
 }
