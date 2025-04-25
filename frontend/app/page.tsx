@@ -127,7 +127,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              PDF Chat AI
+              FileAi
             </motion.h1>
 
             {/* Actions container */}

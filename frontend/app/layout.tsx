@@ -3,9 +3,9 @@ import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'PDF Chat AI',
+  title: 'FileAI',
   description: 'Chat with your PDF documents using AI',
-  generator: 'v0.dev',
+  generator: 'Suman Jana',
 }
 
 export default function RootLayout({
