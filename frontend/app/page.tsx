@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Upload, MessageSquare, FileText, Loader2, Moon, Sun } from "lucide-react"
+import { Upload, MessageSquare, FileText, Loader2, Moon, Sun, Settings2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import UploadSection from "@/components/upload-section"
 import ChatInterface from "@/components/chat-interface"
 import DocumentHistory from "@/components/document-history"
 import type { Document } from "@/types/document"
 import { useTheme } from "next-themes"
+import ThemeSettings from "@/components/theme-settings"
 
 export default function Home() {
   const [activeView, setActiveView] = useState<"upload" | "chat">("upload")
@@ -16,6 +17,7 @@ export default function Home() {
   const [documents, setDocuments] = useState<Document[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const { setTheme, theme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -134,55 +136,78 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <header className="border-b bg-white dark:bg-gray-950 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <motion.h1
-            className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            PDF Chat AI
-          </motion.h1>
-
-          <div className="flex items-center space-x-2">
-            <Button
-              variant={activeView === "upload" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActiveView("upload")}
+      <header className="border-b bg-white dark:bg-gray-950 shadow-sm sticky top-0 z-20">
+        <div className="container mx-auto px-4 py-3">
+          {/* Main header content */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <motion.h1
+              className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              <Upload className="w-4 h-4 mr-2" />
-              Upload
-            </Button>
+              PDF Chat AI
+            </motion.h1>
 
-            <Button
-              variant={activeView === "chat" ? "default" : "outline"}
-              size="sm"
-              onClick={() => activeDocument && setActiveView("chat")}
-              disabled={!activeDocument}
-            >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Chat
-            </Button>
+            {/* Actions container */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+              <Button
+                variant={activeView === "upload" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveView("upload")}
+                className="whitespace-nowrap"
+              >
+                <Upload className="w-4 h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span>Upload</span>
+              </Button>
 
-            <Button variant="outline" size="sm" onClick={() => setShowHistory(!showHistory)}>
-              <FileText className="w-4 h-4 mr-2" />
-              History
-            </Button>
+              <Button
+                variant={activeView === "chat" ? "default" : "outline"}
+                size="sm"
+                onClick={() => activeDocument && setActiveView("chat")}
+                disabled={!activeDocument}
+                className="whitespace-nowrap"
+              >
+                <MessageSquare className="w-4 h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span>Chat</span>
+              </Button>
 
-            <Button
-              variant="outline"
-              size="icon"
-              className="w-8 h-8"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            >
-              {mounted && (theme === "dark" ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              ))}
-              <span className="sr-only">Toggle theme</span>
-            </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowHistory(!showHistory)}
+                className="whitespace-nowrap"
+              >
+                <FileText className="w-4 h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span className="sm:inline">History</span>
+              </Button>
+
+              <div className="flex items-center gap-2 ml-auto">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSettings(true)}
+                  className="gap-1.5 sm:gap-2"
+                >
+                  <Settings2 className="w-4 h-4 flex-shrink-0" />
+                  <span className="hidden sm:inline">Settings</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="w-8 h-8 flex-shrink-0"
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                >
+                  {mounted && (theme === "dark" ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  ))}
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -242,6 +267,8 @@ export default function Home() {
           )}
         </AnimatePresence>
       </main>
+
+      <ThemeSettings open={showSettings} onOpenChange={setShowSettings} />
     </div>
   )
 }
