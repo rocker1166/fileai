@@ -19,7 +19,10 @@ const nextConfig = {
       ...config.resolve,
       alias: {
         ...config.resolve.alias,
-        '@': '.'
+        '@': '.',
+        '@/lib': './lib',
+        '@/components': './components',
+        '@/app': './app'
       },
       extensionAlias: {
         '.js': ['.js', '.ts', '.tsx']
