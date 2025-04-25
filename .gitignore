@@ -133,3 +133,10 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Node.js modules
+node_modules/
+
+# Next.js
+#ignore next js app 
+.next/

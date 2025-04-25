@@ -171,6 +171,9 @@ async def ask_question(req: AskRequest):
     # Use concurrent retrieval for better performance
     qa_chain = get_concurrent_qa_chain(retriever)
     
+    # Generate message UUID
+    message_id = str(uuid.uuid4())
+    
     # Create optimized prompt for the question
     optimized_query = create_optimized_prompt(req.question)
     
@@ -194,7 +197,12 @@ async def ask_question(req: AskRequest):
         log_question_async(req.document_id, req.question, answer)
     )
 
-    return QAResponse(answer=answer, source_pages=pages, context_snippets=context_snippets)
+    return QAResponse(
+        answer=answer, 
+        source_pages=pages, 
+        context_snippets=context_snippets,
+        message_id=message_id
+    )
 
 async def log_question_async(document_id: str, question: str, answer: str):
     """Log question asynchronously without blocking the response"""

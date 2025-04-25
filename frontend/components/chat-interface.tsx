@@ -11,6 +11,7 @@ import type { Message } from "@/types/chat"
 import MessageItem from "@/components/message-item"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Suggestions } from "@/components/ui/suggestions"
+import { v4 as uuidv4 } from 'uuid'
 
 // Add WebSpeech API types
 declare global {
@@ -92,7 +93,7 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
         } else {
           // Set initial welcome message if no history exists
           setMessages([{
-            id: "welcome",
+            id: uuidv4(), // Generate proper UUID for welcome message
             role: "assistant",
             content: `I've analyzed "${document.filename}". Ask me anything about it!`,
             timestamp: new Date(),
@@ -102,7 +103,7 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
         console.error("Error loading chat history:", error)
         // Fallback to initial state if there's an error
         setMessages([{
-          id: "welcome",
+          id: uuidv4(), // Generate proper UUID for welcome message
           role: "assistant",
           content: `I've analyzed "${document.filename}". Ask me anything about it!`,
           timestamp: new Date(),
@@ -156,7 +157,7 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
     setIsSelectingSuggestion(false)
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: uuidv4(), // Generate UUID for user message
       role: "user",
       content: input,
       timestamp: new Date(),
@@ -181,7 +182,7 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
       if (response.ok) {
         const data = await response.json()
         const assistantMessage: Message = {
-          id: data.message_id, // Add message_id from response
+          id: data.message_id || uuidv4(), // Use response message_id or generate UUID
           role: "assistant",
           content: data.answer,
           timestamp: new Date(),
@@ -195,7 +196,7 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
         setMessages((prev) => [...prev, assistantMessage])
       } else {
         const errorMessage: Message = {
-          id: Date.now().toString(),
+          id: uuidv4(), // Generate UUID for error message
           role: "assistant",
           content: "Sorry, I couldn't process your question. Please try again.",
           timestamp: new Date(),
@@ -206,7 +207,7 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
     } catch (error) {
       console.error("Error asking question:", error)
       const errorMessage: Message = {
-        id: Date.now().toString(),
+        id: uuidv4(), // Generate UUID for error message
         role: "assistant",
         content: "Sorry, there was an error processing your request. Please try again.",
         timestamp: new Date(),

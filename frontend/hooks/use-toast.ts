@@ -2,6 +2,7 @@
 
 // Inspired by react-hot-toast library
 import * as React from "react"
+import { v4 as uuidv4 } from 'uuid'
 
 import type {
   ToastActionElement,
@@ -28,8 +29,7 @@ const actionTypes = {
 let count = 0
 
 function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER
-  return count.toString()
+  return uuidv4()
 }
 
 type ActionType = typeof actionTypes
