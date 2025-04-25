@@ -166,8 +166,8 @@ importers:
         version: 3.24.3
     devDependencies:
       '@types/node':
-        specifier: ^22
-        version: 22.15.0
+        specifier: ^22.15.2
+        version: 22.15.2
       '@types/react':
         specifier: ^19
         version: 19.1.2
@@ -1106,8 +1106,8 @@ packages:
   '@types/d3-timer@3.0.2':
     resolution: {integrity: sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw==}
 
-  '@types/node@22.15.0':
-    resolution: {integrity: sha512-99S8dWD2DkeE6PBaEDw+In3aar7hdoBvjyJMR6vaKBTzpvR0P00ClzJMOoVrj9D2+Sy/YCwACYHnBTpMhg1UCA==}
+  '@types/node@22.15.2':
+    resolution: {integrity: sha512-uKXqKN9beGoMdBfcaTY1ecwz6ctxuJAcUlwE55938g0ZJ8lRxwAZqRz2AJ4pzpt5dHdTPMB863UZ0ESiFUcP7A==}
 
   '@types/react-dom@19.1.2':
     resolution: {integrity: sha512-XGJkWF41Qq305SKWEILa1O8vzhb3aOo3ogBlSmiqNko/WmRb6QIaweuZCXjKygVDXpzXb5wyxKTSOsmkuqj+Qw==}
@@ -2833,7 +2833,7 @@ snapshots:
 
   '@types/d3-timer@3.0.2': {}
 
-  '@types/node@22.15.0':
+  '@types/node@22.15.2':
     dependencies:
       undici-types: 6.21.0
 
