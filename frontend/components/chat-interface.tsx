@@ -45,13 +45,22 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
         recognition.current.continuous = true;
         recognition.current.interimResults = true;
         
+        let finalTranscript = '';
+        
         recognition.current.onresult = (event: any) => {
-          const transcript = Array.from(event.results)
-            .map((result: any) => result[0])
-            .map(result => result.transcript)
-            .join('');
+          let interimTranscript = '';
           
-          setInput(prev => prev + ' ' + transcript);
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript + ' ';
+            } else {
+              interimTranscript = transcript;
+            }
+          }
+          
+          // Update input with final transcript and any interim results
+          setInput(finalTranscript + interimTranscript);
         };
 
         recognition.current.onerror = (event: any) => {
@@ -141,6 +150,10 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
+    
+    // Close suggestions when submitting
+    setShowSuggestions(false)
+    setIsSelectingSuggestion(false)
 
     const userMessage: Message = {
       id: Date.now().toString(),

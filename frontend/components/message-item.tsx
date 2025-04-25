@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/button"
 import type { Message } from "@/types/chat"
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import rehypeHighlight from 'rehype-highlight'
+import 'katex/dist/katex.min.css'
+import 'highlight.js/styles/github-dark.css'
 
 interface MessageItemProps {
   message: Message
@@ -58,9 +63,9 @@ export default function MessageItem({ message }: MessageItemProps) {
               `}
             >
               <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[rehypeKatex, rehypeHighlight]}
                 components={{
-                  // Override default styling for specific elements
                   a: ({ children, href }) => (
                     <a 
                       href={href}
@@ -70,6 +75,9 @@ export default function MessageItem({ message }: MessageItemProps) {
                     >
                       {children}
                     </a>
+                  ),
+                  p: ({ children }) => (
+                    <p className="mb-2 last:mb-0">{children}</p>
                   ),
                   ul: ({ children }) => (
                     <ul className="list-disc list-inside my-2 space-y-1">
@@ -81,14 +89,50 @@ export default function MessageItem({ message }: MessageItemProps) {
                       {children}
                     </ol>
                   ),
-                  // Remove the custom li component to let ReactMarkdown handle it properly
+                  blockquote: ({ children }) => (
+                    <blockquote className="border-l-4 border-purple-500 pl-4 my-2 italic">
+                      {children}
+                    </blockquote>
+                  ),
                   strong: ({ children }) => (
                     <strong className="font-semibold">{children}</strong>
                   ),
-                  code: ({ children }) => (
-                    <code className="bg-gray-800/20 dark:bg-gray-100/10 rounded px-1 py-0.5 text-sm">
+                  code: ({ className, children, inline, ...props }: { className?: string; children?: React.ReactNode; inline?: boolean; [key: string]: any }) => {
+                    const match = /language-(\w+)/.exec(className || '')
+                    // Filter out potentially problematic props
+                    const safeProps = Object.fromEntries(
+                      Object.entries(props).filter(([key]) => 
+                        !["nodeRef", "ref", "key", "inline"].includes(key)
+                      )
+                    );
+                    return !inline ? (
+                      <pre className="p-4 rounded-lg bg-gray-800 dark:bg-gray-900 overflow-x-auto">
+                        <code className={className} {...safeProps}>
+                          {children}
+                        </code>
+                      </pre>
+                    ) : (
+                      <code className="bg-gray-800/20 dark:bg-gray-100/10 rounded px-1 py-0.5 text-sm" {...safeProps}>
+                        {children}
+                      </code>
+                    )
+                  },
+                  table: ({ children }) => (
+                    <div className="overflow-x-auto my-4">
+                      <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+                        {children}
+                      </table>
+                    </div>
+                  ),
+                  th: ({ children }) => (
+                    <th className="px-3 py-2 text-left text-sm font-semibold bg-gray-200 dark:bg-gray-700">
                       {children}
-                    </code>
+                    </th>
+                  ),
+                  td: ({ children }) => (
+                    <td className="px-3 py-2 text-sm border-t border-gray-300 dark:border-gray-700">
+                      {children}
+                    </td>
                   ),
                 }}
               >
