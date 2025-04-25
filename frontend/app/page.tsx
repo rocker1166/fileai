@@ -47,7 +47,7 @@ export default function Home() {
 
   const fetchDocuments = async () => {
     try {
-      const response = await fetch("http://localhost:8000/documents")
+      const response = await fetch("https://fileai.onrender.com/documents")
       if (response.ok) {
         const data = await response.json()
         // Merge with existing documents, avoiding duplicates
@@ -64,7 +64,7 @@ export default function Home() {
   const fetchDocumentStatus = async (documentId: string) => {
     try {
       setIsLoading(true)
-      const response = await fetch(`http://localhost:8000/document_status/${documentId}`)
+      const response = await fetch(`https://fileai.onrender.com/document_status/${documentId}`)
       if (response.ok) {
         const data = await response.json()
         if (data.exists && data.is_vectorized) {
@@ -102,7 +102,7 @@ export default function Home() {
 
   const handleDeleteDocument = async (documentId: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/document/${documentId}`, {
+      const response = await fetch(`https://fileai.onrender.com/document/${documentId}`, {
         method: "DELETE",
       })
 

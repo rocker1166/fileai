@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import aiofiles
 import requests
+import postgrest.exceptions
 
 from supabase import create_client, Client
 from models.schemas import AskRequest, UploadResponse, QAResponse, DocumentMetadata
@@ -154,11 +155,13 @@ async def upload_pdf(file: UploadFile = File(...), background_tasks: BackgroundT
 @app.post("/ask_question", response_model=QAResponse)
 async def ask_question(req: AskRequest):
     # Check if document exists
-    doc_query = supabase.table("documents").select("id").eq("id", req.document_id).single().execute()
-    
-    if not doc_query.data:
-        raise HTTPException(status_code=404, detail="Document not found")
-    
+    try:
+        doc_query = supabase.table("documents").select("id").eq("id", req.document_id).single().execute()
+    except postgrest.exceptions.APIError as e:
+        if e.code == 'PGRST116':  # No rows returned
+            raise HTTPException(status_code=404, detail="Document not found")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
     # Load Supabase retriever with optimized configuration
     try:
         retriever = get_supabase_retriever(req.document_id, k=4)

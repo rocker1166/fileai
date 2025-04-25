@@ -93,7 +93,7 @@ export default function ChatInterface({ document }: ChatInterfaceProps) {
     setIsLoading(true)
 
     try {
-      const response = await fetch("http://localhost:8000/ask_question", {
+      const response = await fetch("https://fileai.onrender.com/ask_question", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

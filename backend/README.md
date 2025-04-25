@@ -150,7 +150,7 @@ Start the server with:
 python main.py
 ```
 
-The server will run on `http://localhost:8000` by default.
+The server will run on `https://fileai.onrender.com` by default.
 
 ## CORS
 

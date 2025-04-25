@@ -55,7 +55,7 @@ export default function UploadSection({ onDocumentUploaded }: UploadSectionProps
         })
       }, 300)
 
-      const response = await fetch("http://localhost:8000/upload_pdf", {
+      const response = await fetch("https://fileai.onrender.com/upload_pdf", {
         method: "POST",
         body: formData,
       })
