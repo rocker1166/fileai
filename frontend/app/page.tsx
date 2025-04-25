@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Upload, MessageSquare, FileText, Loader2 } from "lucide-react"
+import { Upload, MessageSquare, FileText, Loader2, Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import UploadSection from "@/components/upload-section"
 import ChatInterface from "@/components/chat-interface"
 import DocumentHistory from "@/components/document-history"
 import type { Document } from "@/types/document"
+import { useTheme } from "next-themes"
 
 export default function Home() {
   const [activeView, setActiveView] = useState<"upload" | "chat">("upload")
@@ -15,6 +16,12 @@ export default function Home() {
   const [documents, setDocuments] = useState<Document[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+  const { setTheme, theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     // Load documents from localStorage first
@@ -161,6 +168,20 @@ export default function Home() {
             <Button variant="outline" size="sm" onClick={() => setShowHistory(!showHistory)}>
               <FileText className="w-4 h-4 mr-2" />
               History
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-8 h-8"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            >
+              {mounted && (theme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              ))}
+              <span className="sr-only">Toggle theme</span>
             </Button>
           </div>
         </div>
