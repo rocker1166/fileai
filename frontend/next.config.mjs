@@ -9,6 +9,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  experimental: {
+    // Improved error handling
+    forceSwcTransforms: true,
+  },
   reactStrictMode: true,
   transpilePackages: [
     '@radix-ui/react-alert-dialog',
@@ -19,7 +23,6 @@ const nextConfig = {
     'cmdk',
     'vaul'
   ],
-  // Removing experimental ESM externals which may cause build issues
   webpack: (config) => {
     config.resolve = {
       ...config.resolve,
@@ -30,18 +33,14 @@ const nextConfig = {
         '@/components': './components',
         '@/app': './app'
       },
-      // Using fallback extensions instead of extension alias for better compatibility
-      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+      fallback: {
+        // Add fallbacks for node core modules
+        fs: false,
+        path: false,
+        crypto: false
+      }
     }
-    
-    // Adding fallback for node.js core modules
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      path: false,
-      os: false
-    };
-    
     return config
   }
 }
