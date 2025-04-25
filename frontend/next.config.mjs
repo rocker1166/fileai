@@ -1,3 +1,16 @@
+let userConfig = undefined
+try {
+  // try to import ESM first
+  userConfig = await import('./v0-user-next.config.mjs')
+} catch (e) {
+  try {
+    // fallback to CJS import
+    userConfig = await import("./v0-user-next.config");
+  } catch (innerError) {
+    // ignore error
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -10,38 +23,28 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    // Improved error handling
-    forceSwcTransforms: true,
+    webpackBuildWorker: true,
+    parallelServerBuildTraces: true,
+    parallelServerCompiles: true,
   },
-  reactStrictMode: true,
-  transpilePackages: [
-    '@radix-ui/react-alert-dialog',
-    '@radix-ui/react-dropdown-menu',
-    '@radix-ui/react-tooltip',
-    'recharts',
-    'react-day-picker',
-    'cmdk',
-    'vaul'
-  ],
-  webpack: (config) => {
-    config.resolve = {
-      ...config.resolve,
-      alias: {
-        ...config.resolve.alias,
-        '@': '.',
-        '@/lib': './lib',
-        '@/components': './components',
-        '@/app': './app'
-      },
-      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
-      fallback: {
-        // Add fallbacks for node core modules
-        fs: false,
-        path: false,
-        crypto: false
+}
+
+if (userConfig) {
+  // ESM imports will have a "default" property
+  const config = userConfig.default || userConfig
+
+  for (const key in config) {
+    if (
+      typeof nextConfig[key] === 'object' &&
+      !Array.isArray(nextConfig[key])
+    ) {
+      nextConfig[key] = {
+        ...nextConfig[key],
+        ...config[key],
       }
+    } else {
+      nextConfig[key] = config[key]
     }
-    return config
   }
 }
 
